@@ -52,10 +52,9 @@ public class RsdlModelWriter : IModelWriter
         writer.Write("type {0}", type.Name);
         writer.Block(() =>
         {
-            var first = true;
             foreach (var prop in type.Properties)
             {
-                if (first) { first = false; } else { }
+
                 WriteProperty(prop);
             }
         });

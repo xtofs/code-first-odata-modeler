@@ -1,0 +1,27 @@
+type applicationApiConfiguration {
+    appId: String
+    apiFeatureConfigurations: [apiFeatureConfiguration]
+}
+
+type application {
+    id: String
+    displayName: String
+    appId: String
+    apiFeatureConfigurations: [apiFeatureConfiguration]
+}
+
+type apiFeatureConfiguration {
+    name: String
+    version: Int32
+    parameters: [featureParameter]
+}
+
+type featureParameter {
+    name: String
+    value: Object
+}
+
+service {
+    applicationApiConfigurations: [applicationApiConfiguration]
+    applications: [application]
+}

@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema>
+  <EntityType Name="applicationApiConfiguration">
+    <Keys>
+      <Key Name="appId" />
+    </Keys>
+    <Property Name="appId" Type="String" />
+    <NavigationProperty Name="apiFeatureConfigurations" Type="Collection(apiFeatureConfiguration)" />
+  </EntityType>
+  <EntityType Name="application">
+    <Keys>
+      <Key Name="id" />
+    </Keys>
+    <Property Name="id" Type="String" />
+    <Property Name="displayName" Type="String" />
+    <Property Name="appId" Type="String" />
+    <NavigationProperty Name="apiFeatureConfigurations" Type="Collection(apiFeatureConfiguration)" />
+  </EntityType>
+  <EntityType Name="apiFeatureConfiguration">
+    <Keys>
+      <Key Name="name" />
+    </Keys>
+    <Property Name="name" Type="String" />
+    <Property Name="version" Type="Int32" />
+    <Property Name="parameters" Type="Collection(featureParameter)" />
+  </EntityType>
+  <ComplexType Name="featureParameter">
+    <Property Name="name" Type="String" />
+    <NavigationProperty Name="value" Type="Object" />
+  </ComplexType>
+  <EntityContainer>
+    <EntitySet Name="applicationApiConfigurations" EntityType="applicationApiConfiguration" />
+    <EntitySet Name="applications" EntityType="application" />
+  </EntityContainer>
+</Schema>

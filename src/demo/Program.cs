@@ -17,7 +17,7 @@ public class Program
     public static void Main()
     {
         var schema = ModelBuilder.Create(typeof(Service));
-        // File.WriteAllText("model.rsdl.json", schema.ToJson());
+        // // File.WriteAllText("model.rsdl.json", schema.ToJson());
 
         using (var writer = ModelWriter.Create(ModelFormat.RSDL, File.Create("model.rsdl"))) // 
         {
@@ -29,65 +29,60 @@ public class Program
             writer.WriteSchema(schema);
         }
 
-        PathsBuilder.Build(schema);
+        // PathsBuilder.Build(schema);
+
+
+        var a = new applicationApiConfiguration("0000-00", new[] {
+            new apiFeatureConfiguration("nested-members-in-unified-group", 2, new[] { new featureParameter("always-log", true) }),
+            new apiFeatureConfiguration("service-principal-as-owners", 2, new featureParameter[] { })
+        });
+
+        Console.WriteLine(JsonSerializer.Serialize(a, new JsonSerializerOptions { WriteIndented = true }));
+
+        Console.WriteLine(AsHeader(a));
     }
+
+    private static string AsHeader(applicationApiConfiguration a) => "Accept-Feature: " + string.Join(", ", a.apiFeatureConfigurations.Select(Format));
+
+    private static string Format(apiFeatureConfiguration f) => $"{f.name}; version={f.version}{Format(f.parameters)}";
+
+    private static string Format(IEnumerable<featureParameter> ps, string sep = "; ") => (ps == null || !ps.Any()) ? "" : sep + string.Join(sep, ps.Select(p => $"{p.name}={p.value}"));
 }
-
-// http://docs.oasis-open.org/odata/odata-csdl-xml/v4.01/odata-csdl-xml-v4.01.html#sec_ProductsandCategoriesExample
-
-
-public record Product(
-    [property: Key] int ID,
-    string Description,
-    DateOnly ReleaseDate,
-    DateOnly DiscontinuedDate,
-    int Rating,
-    decimal Price,
-    string Currency,
-    Category Category,
-    Supplier Supplier
-)
-{ }
-
-public record Category(
-    [property: Key] int ID,
-    string Name,
-    IReadOnlyCollection<Product> Products)
-{ }
-
-public record Supplier(
-    [property: Key] int ID,
-    string Name,
-    Address Address,
-    int Concurrency,
-    IReadOnlyCollection<Product> Products)
-{ }
-
-
-public record struct Address(
-        string Street,
-        string City,
-        string State,
-        string ZipCode,
-        string CountryName,
-        Country Country)
-{ }
-
-
-public record Country(
-        [property: Key] string Code,
-        string Name
-)
-{ }
 
 
 
 
 public record Service(
-
-    IReadOnlyCollection<Product> Products,
-    IReadOnlyCollection<Category> Categories,
-    IReadOnlyCollection<Supplier> Supliers,
-    IReadOnlyCollection<Country> Countries
+    IReadOnlyCollection<applicationApiConfiguration> applicationApiConfigurations,
+    IReadOnlyCollection<application> applications
 )
 { }
+
+public record application(
+    [property: Key] string id,
+    string displayName,
+    string appId,
+    IReadOnlyCollection<apiFeatureConfiguration> apiFeatureConfigurations
+)
+{ }
+
+public record applicationApiConfiguration(
+    [property: Key] string appId,
+    IReadOnlyCollection<apiFeatureConfiguration> apiFeatureConfigurations
+)
+{ }
+
+public record apiFeatureConfiguration(
+    [property: Key] string name,
+    int version,
+    IReadOnlyCollection<featureParameter> parameters
+)
+{ }
+
+public record struct featureParameter(
+    string name,
+    object value
+)
+{ }
+
+

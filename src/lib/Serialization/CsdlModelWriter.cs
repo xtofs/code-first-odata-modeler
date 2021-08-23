@@ -56,10 +56,19 @@ public class CsdlXmlModelWriter : IModelWriter
         var tag = type.IsEntity ? "EntityType" : "ComplexType";
         WriteElement(tag, new Attributes { ["Name"] = type.Name }, () =>
         {
-            var first = true;
+            if (type.IsEntity)
+            {
+                WriteElement("Keys", Attributes.Empty, () =>
+                {
+                    foreach (var key in type.Keys)
+                    {
+                        WriteElement("Key", new Attributes { ["Name"] = key });
+                    }
+                });
+            }
+
             foreach (var prop in type.Properties)
             {
-                if (first) { first = false; } else { }
                 WriteProperty(prop);
             }
         });
