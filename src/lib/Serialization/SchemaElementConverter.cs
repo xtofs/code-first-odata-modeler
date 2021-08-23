@@ -1,9 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using modeling;
 
 namespace modeling;
-
 
 public class SchemaElementConverter : JsonConverter<ISchemaElement>
 {
@@ -24,23 +22,17 @@ public class SchemaElementConverter : JsonConverter<ISchemaElement>
             writer.WriteNullValue();
             return;
         }
-        var o2 = new JsonSerializerOptions { WriteIndented = options.WriteIndented, Converters = { new JsonStringEnumConverter() } };
         switch (value)
         {
-            case StructuredType type: JsonSerializer.Serialize<StructuredType>(writer, type, o2); break;
-            case EnumType @enum: JsonSerializer.Serialize<EnumType>(writer, @enum, o2); break;
+            case StructuredType type: JsonSerializer.Serialize<StructuredType>(writer, type, internalOptions); break;
+            case EnumType @enum: JsonSerializer.Serialize<EnumType>(writer, @enum, internalOptions); break;
             default: throw new NotImplementedException();
         }
-
-        // writer.WriteStartObject();
-        // foreach (var property in value.GetType().GetProperties())
-        // {
-        //     if (!property.CanRead)
-        //         continue;
-        //     var propertyValue = property.GetValue(value);
-        //     writer.WritePropertyName(property.Name);
-        //     JsonSerializer.Serialize(writer, propertyValue, options);
-        // }
-        // writer.WriteEndObject();
     }
+
+    private static JsonSerializerOptions internalOptions = new JsonSerializerOptions
+    {
+        WriteIndented = true,
+        Converters = { new JsonStringEnumConverter() }
+    };
 }

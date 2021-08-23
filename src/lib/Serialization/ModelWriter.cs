@@ -23,7 +23,7 @@ public static class ModelWriter
         switch (format)
         {
             case ModelFormat.RSDL: return new RsdlModelWriter(new StreamWriter(stream));
-            case ModelFormat.CSDL_XML: return new CsdlModelWriter(XmlWriter.Create(stream, new XmlWriterSettings { Indent = true }));
+            case ModelFormat.CSDL_XML: return new CsdlXmlModelWriter(XmlWriter.Create(stream, new XmlWriterSettings { Indent = true }));
             default: throw new NotImplementedException();
         }
     }

@@ -28,7 +28,7 @@ public interface ISchemaElement : IKeyed<string>
 
 public enum SchemaElementKind { StructuredType, EnumType }
 
-public sealed record Property(string Name, string Type) : IKeyed<string>
+public sealed record Property(string Name, string Type, bool isNavigation) : IKeyed<string>
 {
     public bool IsKey { get; init; }
 

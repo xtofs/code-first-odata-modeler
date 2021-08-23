@@ -17,18 +17,19 @@ public class ReadOnlyKeyedCollection<TK, TV> : IReadOnlyKeyedCollection<TK, TV>
 {
     private readonly Dictionary<TK, TV> dictionary = new Dictionary<TK, TV>();
 
-    public ReadOnlyKeyedCollection(IEnumerable<TV> properties) : base()
+    public ReadOnlyKeyedCollection(IEnumerable<TV> items) : base()
     {
         try
         {
-            foreach (var prop in properties)
+            foreach (var item in items)
             {
-                dictionary.Add(prop.Key, prop);
+                dictionary.Add(item.Key, item);
             }
         }
-        catch (System.ArgumentException aex)
+        catch (System.ArgumentException aex) when (aex.Message.StartsWith("An item with the same key has already been added."))
         {
-            throw new DuplicateKeyException(aex);
+            var key = aex.Message.Substring(aex.Message.LastIndexOf(": ") + 2);
+            throw new DuplicateKeyException(key, aex);
         }
     }
 

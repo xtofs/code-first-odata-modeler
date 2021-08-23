@@ -92,7 +92,8 @@ public class ModelBuilder
                 throw new NotImplementedException("generic element type");
             }
 
-            return new Property(prop.Name, elementType.Name) { IsMultiValue = true, IsKey = isKey };
+            var isEntity = elementType.IsClass && elementType != typeof(string);
+            return new Property(prop.Name, elementType.Name, isEntity) { IsMultiValue = true, IsKey = isKey };
         }
         else if (prop.PropertyType.IsGenericType)
         {
@@ -100,7 +101,9 @@ public class ModelBuilder
         }
         else
         {
-            return new Property(prop.Name, prop.PropertyType.Name) { IsKey = isKey };
+            var propType = prop.PropertyType;
+            var isEntity = propType.IsClass && propType != typeof(string);
+            return new Property(prop.Name, propType.Name, isEntity) { IsKey = isKey };
         }
     }
 

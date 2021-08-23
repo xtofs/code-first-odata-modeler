@@ -5,11 +5,11 @@ namespace modeling
     [Serializable]
     internal class DuplicateKeyException : Exception
     {
-        private ArgumentException aex;
-
-        public DuplicateKeyException(ArgumentException aex)
+        public DuplicateKeyException(string key, ArgumentException aex) : base($"duplicate Key: {key}", aex)
         {
-            this.aex = aex;
+            Key = key;
         }
+
+        public string Key { get; }
     }
 }

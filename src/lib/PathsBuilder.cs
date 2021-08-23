@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using modeling;
 
 public class PathsBuilder
@@ -6,7 +7,7 @@ public class PathsBuilder
     {
         var paths = new PathsBuilder(schema.Elements);
 
-        paths.ShowProperties("", schema.Service.Properties);
+        paths.ShowProperties("", schema.Service.Properties, ImmutableStack<StructuredType>.Empty);
     }
 
     private SchemaElementCollection env;
@@ -16,33 +17,35 @@ public class PathsBuilder
         this.env = env;
     }
 
-    private void ShowProperties(string prefix, Properties properties, int d = 5)
+    private void ShowProperties(string prefix, Properties properties, IImmutableStack<StructuredType> visited)
     {
-        if (d <= 0) return;
-
         foreach (var prop in properties)
         {
-            if (env.TryGetValue(prop.Type, out var schemaElement))
+            if (env.TryGetValue(prop.Type, out var propType))
             {
-                ShowProperty(prefix, prop, schemaElement, d);
+                ShowProperty(prefix, prop, propType, visited);
             }
         }
     }
 
-    private void ShowProperty(string prefix, Property prop, ISchemaElement element, int d)
+    private void ShowProperty(string prefix, Property prop, ISchemaElement propType, IImmutableStack<StructuredType> visited)
     {
+        if (visited.Contains(propType))
+        {
+            return;
+        }
         var url = $"{prefix}/{prop.Name}";
-        Console.WriteLine("GET {0} \n\t# {1}", url, CreateTypeRef(prop, element));
+        Console.WriteLine("GET {0} \n\t# {1}", url, CreateTypeRef(prop, propType));
 
-        if (element is StructuredType type)
+        if (propType is StructuredType type)
         {
             if (type.IsEntity && prop.IsMultiValue)
             {
                 url += "/{" + string.Join(",", type.Keys) + "}";
-                Console.WriteLine("GET {0} \n\t# {1}", url, $"a single {type.Name} Entity");
+                Console.WriteLine("GET {0} \n\t# {1}", url, $"a {type.Name} entity");
             }
 
-            ShowProperties(url, type.Properties, d - 1);
+            ShowProperties(url, type.Properties, visited.Push(type));
         }
 
         static string CreateTypeRef(Property prop, ISchemaElement element)

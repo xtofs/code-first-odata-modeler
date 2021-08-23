@@ -3,18 +3,17 @@ using System.Xml;
 
 namespace modeling;
 
-public class CsdlModelWriter : IModelWriter
+public class CsdlXmlModelWriter : IModelWriter
 {
     private bool disposedValue;
 
     private readonly XmlWriter writer;
 
-    public CsdlModelWriter(XmlWriter writer) => (this.writer) = (writer);
+    public CsdlXmlModelWriter(XmlWriter writer) => (this.writer) = (writer);
 
     public void WriteSchema(Schema schema)
     {
-        //         <edmx:Edmx xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx"
-
+        //<edmx:Edmx xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx"
         //            Version="4.01">
         //   <edmx:DataServices>
         //     …
@@ -32,10 +31,12 @@ public class CsdlModelWriter : IModelWriter
         WriteElement("EntityContainer", new Attributes { }, () =>
        {
            var first = true;
-           foreach (var prop in service.Properties)
+           foreach (var property in service.Properties)
            {
                if (first) { first = false; } else { }
-               WriteProperty(prop);
+
+               var tag = property.IsMultiValue ? "EntitySet" : "Singleton";
+               WriteElement(tag, new Attributes { ["Name"] = property.Name, ["EntityType"] = property.Type });
            }
        });
     }
@@ -52,7 +53,8 @@ public class CsdlModelWriter : IModelWriter
 
     public void WriteType(StructuredType type)
     {
-        WriteElement("Type", new Attributes { ["Name"] = type.Name }, () =>
+        var tag = type.IsEntity ? "EntityType" : "ComplexType";
+        WriteElement(tag, new Attributes { ["Name"] = type.Name }, () =>
         {
             var first = true;
             foreach (var prop in type.Properties)
@@ -92,7 +94,8 @@ public class CsdlModelWriter : IModelWriter
     public void WriteProperty(Property property)
     {
         var @ref = property.IsMultiValue ? $"Collection({property.Type})" : property.Type;
-        WriteElement("Property", new Attributes { ["Name"] = property.Name, ["Type"] = @ref });
+        var tag = property.isNavigation ? "NavigationProperty" : "Property";
+        WriteElement(tag, new Attributes { ["Name"] = property.Name, ["Type"] = @ref });
     }
 
     // ##############################
