@@ -54,7 +54,7 @@ public class CsdlXmlModelWriter : IModelWriter
     public void WriteType(StructuredType type)
     {
         var tag = type.IsEntity ? "EntityType" : "ComplexType";
-        WriteElement(tag, new Attributes { ["Name"] = type.Name }, () =>
+        WriteElement(tag, new Attributes { ["Name"] = type.Name, ["OpenType"] = type.IsOpen }, () =>
         {
             if (type.IsEntity)
             {
@@ -144,10 +144,23 @@ public class CsdlXmlModelWriter : IModelWriter
         writer.WriteStartElement(name);
         foreach (var attribute in attributes)
         {
-            writer.WriteAttributeString(attribute.Key, attribute.Value.ToString());
+            if (!IsDefaultValue(attribute.Value))
+            {
+                writer.WriteAttributeString(attribute.Key, attribute.Value.ToString());
+            }
         }
         action();
         writer.WriteEndElement();
+    }
+
+    private bool IsDefaultValue(object value)
+    {
+        switch (value)
+        {
+            case bool b: return b == default;
+            case string s: return s == default;
+            default: return false;
+        }
     }
 
     class Attributes : IEnumerable<KeyValuePair<string, object>>
