@@ -56,7 +56,9 @@ public class ModelBuilder
     private StructuredType CreateType(Type type)
     {
         var props = new Properties(type.GetProperties().Select(p => CreateProperty(p)));
-        var model = new StructuredType(type.Name, props);
+        var isOpen = type.GetCustomAttribute<OpenTypeAttribute>() != null;
+
+        var model = new StructuredType(type.Name, props) { IsOpen = isOpen };
 
         if (type.IsClass && !model.IsEntity)
         {

@@ -59,6 +59,8 @@ public sealed record StructuredType(string Name, Properties Properties) : ISchem
     public SchemaElementKind Kind => SchemaElementKind.StructuredType;
 
     public IEnumerable<string> Keys => Properties.Where(p => p.IsKey).Select(p => p.Name);
+
+    public bool IsOpen { get; init; }
 }
 
 public sealed record EnumType(string Name, Members Members) : ISchemaElement

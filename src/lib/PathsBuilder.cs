@@ -34,26 +34,32 @@ public class PathsBuilder
         {
             return;
         }
+        Console.WriteLine("### {0}", CreateTypeRef(prop, propType));
         var url = $"{prefix}/{prop.Name}";
-        Console.WriteLine("GET {0} \n\t# {1}", url, CreateTypeRef(prop, propType));
+        Console.WriteLine("GET {0}", url);
+        Console.WriteLine();
 
         if (propType is StructuredType type)
         {
+            // add the {key} to the path
             if (type.IsEntity && prop.IsMultiValue)
             {
                 url += "/{" + string.Join(",", type.Keys) + "}";
-                Console.WriteLine("GET {0} \n\t# {1}", url, $"a {type.Name} entity");
+                Console.WriteLine("### get a {0} entity", type.Name);
+                Console.WriteLine("GET {0}", url);
+                Console.WriteLine();
+                
             }
 
             ShowProperties(url, type.Properties, visited.Push(type));
         }
+    }
 
-        static string CreateTypeRef(Property prop, ISchemaElement element)
-        {
-            var isEntityRef = element is StructuredType type ? type.IsEntity : false;
-            // var @ref = prop.IsMultiValue ? isEntityRef ? $"{{ {element.Name} }}" : $"[{element.Name}]" : $"{element.Name}";
-            var @ref = prop.IsMultiValue ? isEntityRef ? $"a set of {element.Name}" : $"a list of {element.Name}" : $"a single {element.Name}";
-            return @ref;
-        }
+    static string CreateTypeRef(Property prop, ISchemaElement element)
+    {
+        var isEntityRef = element is StructuredType type ? type.IsEntity : false;
+        // var @ref = prop.IsMultiValue ? isEntityRef ? $"{{ {element.Name} }}" : $"[{element.Name}]" : $"{element.Name}";
+        var @ref = prop.IsMultiValue ? isEntityRef ? $"get a set of {element.Name} entities" : $"get a list of {element.Name} items" : $"get a {element.Name}";
+        return @ref;
     }
 }
