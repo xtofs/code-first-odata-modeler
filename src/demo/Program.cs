@@ -3,15 +3,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using modeling;
 
-
-internal record User(int id, int? managerId)
-{
-}
-
-internal record struct Rel(int from, int to, int distance)
-{
-}
-
 public class Program
 {
     public static void Main()
@@ -34,7 +25,6 @@ public class Program
 }
 
 // http://docs.oasis-open.org/odata/odata-csdl-xml/v4.01/odata-csdl-xml-v4.01.html#sec_ProductsandCategoriesExample
-
 
 public record Product(
     [property: Key] int ID,
@@ -79,8 +69,6 @@ public record Country(
         string Name
 )
 { }
-
-
 
 
 public record Service(
