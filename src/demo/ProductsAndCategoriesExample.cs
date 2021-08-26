@@ -49,7 +49,6 @@ public record Country(
 )
 { }
 
-
 public record Service(
 
     IReadOnlyCollection<Product> Products,

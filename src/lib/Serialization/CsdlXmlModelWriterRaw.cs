@@ -3,13 +3,13 @@ using System.Xml;
 
 namespace modeling;
 
-public class CsdlXmlModelWriter : IModelWriter
+public class CsdlXmlModelWriterRaw : IModelWriter
 {
     private bool disposedValue;
 
     private readonly XmlWriter writer;
 
-    public CsdlXmlModelWriter(XmlWriter writer) => (this.writer) = (writer);
+    public CsdlXmlModelWriterRaw(XmlWriter writer) => (this.writer) = (writer);
 
     public void WriteSchema(Schema schema)
     {
