@@ -1,0 +1,12 @@
+type outboundSharedUserProfile {
+    userId: String
+    tenants: [outboundSharedUserProfileTenant]
+}
+
+type outboundSharedUserProfileTenant {
+    tenantId: String
+}
+
+service {
+    OutboundSharedUserProfiles: [outboundSharedUserProfile]
+}
